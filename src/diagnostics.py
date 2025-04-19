@@ -18,10 +18,9 @@ from scipy.stats import (
     anderson, levene, kstest, chi2_contingency
 )
 from statsmodels.stats.diagnostic import (
-    acorr_ljungbox, het_breuschpagan, 
-    het_white, durbin_watson
+    acorr_ljungbox, het_breuschpagan, het_white
 )
-from statsmodels.tsa.stattools import adfuller
+from statsmodels.tsa.stattools import adfuller   
 from statsmodels.tsa.arima.model import ARIMA
 from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
 
@@ -122,27 +121,27 @@ def dagostino_test(data):
     return dagostino_stat, p_value, is_normal
 
 
-def durbin_watson_test(data):
-    """
-    Perform the Durbin-Watson test for autocorrelation.
+# def durbin_watson_test(data):
+#     """
+#     Perform the Durbin-Watson test for autocorrelation.
     
-    Parameters:
-    - data: 1D numpy array of sample data.
+#     Parameters:
+#     - data: 1D numpy array of sample data.
     
-    Returns:
-    - dw_stat: Durbin-Watson statistic (between 0 and 4, with 2 indicating no autocorrelation).
-    - autocorrelation_type: 'positive', 'negative', or 'none' based on the statistic.
-    """
-    dw_stat = durbin_watson(data)
+#     Returns:
+#     - dw_stat: Durbin-Watson statistic (between 0 and 4, with 2 indicating no autocorrelation).
+#     - autocorrelation_type: 'positive', 'negative', or 'none' based on the statistic.
+#     """
+#     dw_stat = durbin_watson(data)
     
-    if dw_stat < 1.5:
-        autocorrelation_type = 'positive'
-    elif dw_stat > 2.5:
-        autocorrelation_type = 'negative'
-    else:
-        autocorrelation_type = 'none'
+#     if dw_stat < 1.5:
+#         autocorrelation_type = 'positive'
+#     elif dw_stat > 2.5:
+#         autocorrelation_type = 'negative'
+#     else:
+#         autocorrelation_type = 'none'
     
-    return dw_stat, autocorrelation_type
+#     return dw_stat, autocorrelation_type
 
 
 def breusch_pagan_test(data, exog_vars=None):
@@ -249,7 +248,7 @@ def run_diagnostic_tests(data, test_names=None):
         'shapiro_wilk': shapiro_wilk_test,
         'dagostino': dagostino_test,
         'ljung_box': ljung_box_test,
-        'durbin_watson': durbin_watson_test,
+        # 'durbin_watson': durbin_watson_test,
         'levene': levene_test,
         'breusch_pagan': breusch_pagan_test,
         'adf': adf_test,

@@ -21,7 +21,7 @@ from src import models, pde_solver, monte_carlo, diagnostics, utils, backtesting
 def setup_output_directory():
     """Create output directory for saving results."""
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    output_dir = f"output_{timestamp}"
+    output_dir = f"Results"
     os.makedirs(output_dir, exist_ok=True)
     return output_dir
 
@@ -176,7 +176,7 @@ def run_pde_solver(output_dir):
     }
     
     r_range = (0.01, 0.10)
-    fig10 = pde_solver.plot_option_price_surface(
+    fig10, ax = pde_solver.plot_option_price_surface(
         pde_solver.solve_european_swaption, solver_args, r_range, 
         title="European Swaption Price Surface"
     )
@@ -244,14 +244,21 @@ def run_monte_carlo(model_results, output_dir):
     print(f"Sortino Ratio: {risk_metrics['sortino_ratio']:.4f}")
     
     # Run stress tests on the portfolio
-    base_params = model_results['vasicek']['model'].calibrated_params
+    vasicek_model = model_results['vasicek']['model']
+    base_params = {
+        'a': vasicek_model.a,
+        'b': vasicek_model.b,
+        'sigma': vasicek_model.sigma,
+        'r0': vasicek_model.r0
+    }
     
     # Define stress test scenarios
+    # Define stress test scenarios with all required parameters
     scenarios = {
-        'Rate_Hike': {'r0': 0.05, 'b': 0.06},
-        'Rate_Cut': {'r0': 0.01, 'b': 0.02},
-        'High_Volatility': {'sigma': 0.03},
-        'Stagflation': {'r0': 0.07, 'b': 0.08, 'sigma': 0.03}
+        'Rate_Hike': {'a': 0.1, 'b': 0.06, 'sigma': 0.01, 'r0': 0.05},
+        'Rate_Cut': {'a': 0.1, 'b': 0.02, 'sigma': 0.01, 'r0': 0.01},
+        'High_Volatility': {'a': 0.1, 'b': 0.05, 'sigma': 0.03, 'r0': 0.03},
+        'Stagflation': {'a': 0.1, 'b': 0.08, 'sigma': 0.03, 'r0': 0.07}
     }
     
     # Run stress tests
@@ -277,9 +284,11 @@ def run_monte_carlo(model_results, output_dir):
     
     # Run sensitivity analysis
     sensitivity_results = monte_carlo.sensitivity_analysis(
-        model_results['vasicek']['model'],
+        # model_results['vasicek']['model'],
+        models.VasicekModel,
+        base_params,
         param_ranges,
-        portfolio_config
+        portfolio_config 
     )
     
     # Plot sensitivity analysis results

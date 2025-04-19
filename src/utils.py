@@ -448,18 +448,24 @@ def create_dashboard(model_results, portfolio_results=None, diagnostics_results=
                         cell_colors.append('white')
                 
                 # Create table with colored cells
-                table = ax5.table(
-                    cellText=[[name, val] for name, val in zip(test_names, test_values_str)],
-                    colLabels=['Test', 'Result'],
-                    loc='center',
-                    cellColours=[[('lightgray' if i % 2 == 0 else 'white'), color] 
-                                 for i, color in enumerate(cell_colors)]
-                )
-                
-                # Adjust table formatting
-                table.auto_set_font_size(False)
-                table.set_fontsize(10)
-                table.scale(1, 1.5)
+                if test_names and test_values_str:  # Only create the table if there's data
+                    # Create table with colored cells
+                    table = ax5.table(
+                        cellText=[[name, val] for name, val in zip(test_names, test_values_str)],
+                        colLabels=['Test', 'Result'],
+                        loc='center',
+                        cellColours=[[('lightgray' if i % 2 == 0 else 'white'), color] 
+                                    for i, color in enumerate(cell_colors)]
+                    )
+                    
+                    # Adjust table formatting
+                    table.auto_set_font_size(False)
+                    table.set_fontsize(10)
+                    table.scale(1, 1.5)
+                else:
+                    # Handle the case where there are no test results
+                    ax5.text(0.5, 0.5, 'No diagnostic test results available', 
+                            horizontalalignment='center', verticalalignment='center')
                 
                 ax5.set_title('Diagnostic Test Results')
                 ax5.axis('off')  # Hide axis for the table
